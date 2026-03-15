@@ -1,5 +1,13 @@
 service,failure_rate,mttr
-A,0.02,5
-B,0.01,4
-C,0.015,6
-D,0.005,3
+api_gateway,0.01,139
+auth_service,0.008,174
+user_service,0.008,174
+order_service,0.012,174
+payment_service,0.01,174
+inventory_service,0.009,174
+notification_service,0.007,120
+cache_service,0.015,125
+message_queue,0.01,174
+data_storage,0.006,382
+analytics_service,0.005,120
+payment_gateway,0.004,120
