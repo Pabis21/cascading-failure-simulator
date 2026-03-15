@@ -1,0 +1,5 @@
+source,target,probability
+A,B,0.6
+A,C,0.4
+B,D,0.5
+C,D,0.7

@@ -1,0 +1,5 @@
+service,failure_rate,mttr
+A,0.02,5
+B,0.01,4
+C,0.015,6
+D,0.005,3
