@@ -4,6 +4,10 @@ import org.example.engine.CSVLoader;
 import org.example.engine.FailureEngine;
 import org.example.model.MicroserviceGraph;
 import org.example.model.Service;
+
+import java.util.HashSet;
+import java.util.Set;
+
 import static org.example.engine.ExportResults.exportResults;
 
 public class Main {
@@ -19,24 +23,34 @@ public class Main {
 
         exportResults(graph, 1000);
         System.out.println("\n--- RESULTS ---");
-
         for (Service s : graph.services) {
 
-            double lambdaObserved = (double) s.totalFailures / 1000;
+            Set<Service> visited = new HashSet<>();
 
-            double mttrObserved =
-                    s.totalFailures == 0 ? 0 :
-                            (double) s.totalDowntime / s.totalFailures;
+            engine.propagateFailure(s, visited, true);
 
-            System.out.println(
-                    s.name +
-                            " | Direct: " + s.directFailures +
-                            " | Cascaded: " + s.cascadedFailures +
-                            " | Total: " + s.totalFailures +
-                            " | λ_obs: " + lambdaObserved +
-                            " | MTTR_obs: " + mttrObserved
-            );
+            System.out.println(s.name + " caused failures: " + (visited.size() - 1));
         }
-
+//        for (Service s : graph.services) {
+//
+//            double lambdaObserved = (double) s.totalFailures / 1000;
+//
+//            double mttrObserved =
+//                    s.totalFailures == 0 ? 0 :
+//                            (double) s.totalDowntime / s.totalFailures;
+//
+//            System.out.println(
+//                    s.name +
+//                            " | Direct: " + s.directFailures +
+//                            " | Cascaded: " + s.cascadedFailures +
+//                            " | Total: " + s.totalFailures +
+//                            " | λ_obs: " + lambdaObserved +
+//                            " | MTTR_obs: " + mttrObserved
+//            );
+//        }
+//        System.out.println(
+//                "Dependents of data_storage: " +
+//                        graph.getDependents(graph.getService("data_storage")).size()
+//        );
     }
 }

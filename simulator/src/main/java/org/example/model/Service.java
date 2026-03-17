@@ -22,5 +22,17 @@ public class Service {
         this.failureRate = failureRate;
         this.mttr = mttr;
     }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Service)) return false;
+        Service s = (Service) o;
+        return name.equals(s.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode();
+    }
 }
 

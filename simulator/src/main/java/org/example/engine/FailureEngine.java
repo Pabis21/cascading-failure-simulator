@@ -24,37 +24,43 @@ public class FailureEngine {
 
             for (Service s : graph.services) {
 
-                // Step 1: direct failure
                 if (random.nextDouble() < s.failureRate) {
 
-                    s.directFailures++; // track direct failures
+                    s.directFailures++;
+                    s.totalFailures++;
+                    s.totalDowntime += s.mttr;
 
-                    propagateFailure(s, visited, false); // false = not cascaded
+                    // root failure → mark as NOT cascaded
+                    propagateFailure(s, visited, true);
                 }
             }
         }
     }
 
 
-    private void propagateFailure(Service service, Set<Service> visited, boolean cascaded) {
+    public void propagateFailure(Service service, Set<Service> visited, boolean isRoot) {
 
-        if (visited.contains(service))
-            return;
+        if (visited.contains(service)) return;
 
         visited.add(service);
 
-        service.totalFailures++;
-        service.totalDowntime += service.mttr;
-
-        if (cascaded)
+        // Only count cascaded if NOT root
+        if (!isRoot) {
             service.cascadedFailures++;
+            service.totalFailures++;
+            service.totalDowntime += service.mttr;
+        }
 
-        for (Edge e : service.dependencies) {
+        // Reverse dependency propagation
+        for (Edge e : graph.getDependents(service)) {
 
-            if (random.nextDouble() < e.propagationProbability) {
+            Service dependent = e.target;
 
-                propagateFailure(e.target, visited, true);
+            if (!visited.contains(dependent)) {
 
+                if (random.nextDouble() < e.propagationProbability) {
+                    propagateFailure(dependent, visited, false);
+                }
             }
         }
     }

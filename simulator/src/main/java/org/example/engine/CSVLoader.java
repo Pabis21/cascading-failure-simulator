@@ -62,7 +62,16 @@ public class CSVLoader {
                     probability
             );
         }
+        System.out.println(
+                "Dependents of data_storage: " +
+                        graph.getDependents(graph.getService("data_storage")).size()
+        );
+        System.out.println(
+                "Dependents of data_storage: " +
+                        graph.getDependents(graph.getService("data_storage")).size()
+        );
 
         br.close();
     }
+
 }

@@ -1,22 +1,21 @@
 package org.example.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MicroserviceGraph {
 
     public List<Service> services = new ArrayList<>();
 
+    // Reverse dependencies: who depends on me
+    private Map<Service, List<Edge>> reverseDependencies = new HashMap<>();
+
     public void addService(Service s) {
         services.add(s);
     }
 
-    // Add dependency edge
-    public void addDependency(Service from, Service to, double probability) {
-        from.dependencies.add(new Edge(to, probability));
-    }
-
-    // Find service by name
     public Service getService(String name) {
         for (Service s : services) {
             if (s.name.equals(name)) {
@@ -26,22 +25,20 @@ public class MicroserviceGraph {
         return null;
     }
 
-    // Return services that depend on the given service
-    public List<Service> getDependents(Service service) {
+    public void addDependency(Service source, Service target, double probability) {
 
-        List<Service> dependents = new ArrayList<>();
+        // forward (optional)
+        source.dependencies.add(new Edge(target, probability));
 
-        for (Service s : services) {
-            for (Edge e : s.dependencies) {
+        // reverse (THIS is what matters)
+        reverseDependencies
+                .computeIfAbsent(target, k -> new ArrayList<>())
+                .add(new Edge(source, probability));
+    }
 
-                if (e.target.equals(service)) {
-                    dependents.add(s);
-                }
-
-            }
-        }
-
-        return dependents;
+    // THIS is what we will use for propagation
+    public List<Edge> getDependents(Service service) {
+        return reverseDependencies.getOrDefault(service, new ArrayList<>());
     }
 
 }
