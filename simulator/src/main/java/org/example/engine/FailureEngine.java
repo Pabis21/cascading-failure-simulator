@@ -4,63 +4,59 @@ import org.example.model.Edge;
 import org.example.model.MicroserviceGraph;
 import org.example.model.Service;
 
-import java.util.Random;
+import java.util.*;
 
 public class FailureEngine {
-    MicroserviceGraph graph;
-    Random random = new Random();
+
+    private MicroserviceGraph graph;
+    private Random random = new Random();
 
     public FailureEngine(MicroserviceGraph graph) {
         this.graph = graph;
     }
 
-    public void simulate(int totalTime) {
-        for (int t = 0; t < totalTime; t++) {
 
-            // Random Failures
+    public void simulate(int iterations) {
+
+        for (int i = 0; i < iterations; i++) {
+
+            Set<Service> visited = new HashSet<>();
+
             for (Service s : graph.services) {
-                if (!s.isFailed && random.nextDouble() < s.failureRate) {
-                    failService(s, t);
-                }
-            }
 
-            // Propagation
-            propagateFailures(t);
+                // Step 1: direct failure
+                if (random.nextDouble() < s.failureRate) {
 
-            //  Recovery
-            updateRecovery(t);
-        }
-    }
+                    s.directFailures++; // track direct failures
 
-    void failService(Service s, int time) {
-        s.isFailed = true;
-        s.failureStartTime = time;
-        s.totalFailures++;
-        System.out.println("FAIL: " + s.name + " at time " + time);
-    }
-
-    void propagateFailures(int time) {
-        for (Service s : graph.services) {
-            if (s.isFailed) {
-                for (Edge e : s.dependencies) {
-                    if (!e.target.isFailed &&
-                            random.nextDouble() < e.propagationProbability) {
-                        failService(e.target, time);
-                    }
+                    propagateFailure(s, visited, false); // false = not cascaded
                 }
             }
         }
     }
 
-    void updateRecovery(int time) {
-        for (Service s : graph.services) {
-            if (s.isFailed &&
-                    (time - s.failureStartTime) >= s.mttr) {
 
-                s.isFailed = false;
-                s.totalDowntime += s.mttr;
-                System.out.println("RECOVER: " + s.name + " at time " + time);
+    private void propagateFailure(Service service, Set<Service> visited, boolean cascaded) {
+
+        if (visited.contains(service))
+            return;
+
+        visited.add(service);
+
+        service.totalFailures++;
+        service.totalDowntime += service.mttr;
+
+        if (cascaded)
+            service.cascadedFailures++;
+
+        for (Edge e : service.dependencies) {
+
+            if (random.nextDouble() < e.propagationProbability) {
+
+                propagateFailure(e.target, visited, true);
+
             }
         }
     }
+
 }

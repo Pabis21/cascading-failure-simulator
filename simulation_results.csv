@@ -1,0 +1,13 @@
+service,direct_failures,cascaded_failures,total_failures,lambda_observed,mttr_observed
+api_gateway,15,0,15,0.015,139.0
+auth_service,5,10,15,0.015,174.0
+user_service,8,10,18,0.018,174.0
+order_service,8,12,20,0.02,174.0
+payment_service,12,16,28,0.028,174.0
+inventory_service,9,8,17,0.017,174.0
+notification_service,7,5,12,0.012,120.0
+cache_service,18,12,29,0.029,125.0
+message_queue,9,9,18,0.018,174.0
+data_storage,7,45,51,0.051,382.0
+analytics_service,6,6,12,0.012,120.0
+payment_gateway,5,25,30,0.03,120.0
