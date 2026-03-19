@@ -1,0 +1,15 @@
+service,failure_rate,mttr
+google_cloud_dns,0.002,174
+cloud_cdn,0.003,174
+cloud_load_balancing,0.004,118
+google_app_engine,0.010,174
+apigee,0.008,176
+cloud_functions,0.009,174
+dataflow,0.011,379
+api_gateway,0.008,139
+api_gateway_read,0.007,139
+google_cloud_pub_sub,0.007,176
+cloud_memorystore,0.012,150
+cloud_sql,0.004,522
+cloud_sql_read_replica,0.003,174
+cloud_storage,0.003,299
